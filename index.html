@@ -364,6 +364,10 @@ tbody tr:hover{background:#fcfaff}
         <div class="tile-grid" id="ready-grid"><div class="empty">Loading service map…</div></div>
       </div>
       <div class="panel">
+        <div class="panel-heading"><div><h2>Gateway providers <span class="count" id="gw-count">—</span></h2><p>Live 3366 registry. A key counts only when the provider accepts it; model counts are not proof of a valid key.</p></div><span class="local-badge"><i class="dot green"></i> LIVE</span></div>
+        <div class="tile-grid" id="gw-grid"><div class="empty">Loading provider health…</div></div>
+      </div>
+      <div class="panel">
         <div class="panel-heading"><div><h2>Add or rotate a key</h2><p>One command: read without echo, store in OpenBao, verify, then push to every service.</p></div><span class="local-badge"><i class="dot green"></i> NO RE-TYPING</span></div>
         <div class="tool-block" id="keys-commands"></div>
       </div>
@@ -715,6 +719,18 @@ tbody tr:hover{background:#fcfaff}
     el('keys-runtime').textContent = rt.present
       ? 'Runtime sync: ' + (rt.names || []).length + ' keys in ' + (rt.envFile || 'tmpfs') + ' · checked ' + new Date(auth.checkedAt).toLocaleTimeString()
       : 'Runtime env not synced yet — press Sync to services';
+
+    var gw = auth.gateway || {};
+    var gws = gw.providers || [];
+    el('gw-count').textContent = gws.length ? gws.filter(function (p) { return p.health === 'healthy'; }).length + '/' + gws.length + ' healthy' : 'unavailable';
+    el('gw-grid').innerHTML = gws.length ? gws.map(function (p) {
+      var icon = p.health === 'healthy' ? '✓' : p.health === 'disabled' ? '–' : '!';
+      return '<div class="tile">' +
+        '<div class="tile-top"><span class="tile-icon">' + icon + '</span><strong>' + esc(p.name || p.id) + '</strong></div>' +
+        '<small>' + esc(p.health) + ' · ' + esc(p.modelCount || 0) + ' models</small>' +
+        '<small>' + (p.enabled ? 'key configured' : 'disabled') + '</small>' +
+        '</div>';
+    }).join('') : '<div class="empty">Gateway 3366 did not return a provider list.</div>';
   }
 
   function authPost(url) {
