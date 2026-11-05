@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Pliny 7777 — Local Apps</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{--bg:#0b0f14;--card:#161b22;--line:#30363d;--txt:#e6edf3;--mut:#8b949e;--blue:#1f6feb}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:28px}
+h1{margin:0 0 6px;font-size:30px}
+.sub{color:var(--mut);margin:0 0 22px;line-height:1.5}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.btn{display:block;padding:22px 14px;border-radius:14px;background:var(--card);border:1px solid var(--line);color:var(--txt);text-decoration:none;font-size:16px;font-weight:600;text-align:center}
+.btn small{display:block;margin-top:6px;font-weight:400;color:var(--mut);font-size:13px}
+.btn.chat{background:var(--blue)} .btn.chat small{color:#cfe0ff}
+.cli{margin-top:22px;padding:16px;background:var(--card);border:1px solid var(--line);border-radius:12px}
+.cli code{display:block;background:#0d1117;padding:12px;border-radius:8px;font-family:monospace;word-break:break-all;margin:8px 0}
+.copy{padding:9px 16px;border:none;border-radius:8px;background:var(--blue);color:#fff;cursor:pointer;font-weight:700}
+.note{color:var(--mut);font-size:13px;margin-top:10px;line-height:1.5}
+.off{opacity:.5;pointer-events:none}
+.off small{color:#ff8}
+</style></head><body>
+<div class="wrap">
+<h1>Pliny · 7777 — Local Apps Only</h1>
+<p class="sub">Every button opens a real local app or copies a ready-to-run CLI command. No repo links. Green pills = running now.</p>
+
+<div class="grid">
+<a class="btn chat" href="http://127.0.0.1:7777/" target="_blank">Pliny Hub<small>http://127.0.0.1:7777/</small></a>
+<a class="btn chat" href="http://127.0.0.1:3000/" target="_blank">G0DM0D3<small>http://127.0.0.1:3000/</small></a>
+<a class="btn chat" href="http://127.0.0.1:5173/" target="_blank">GL4SS<small>http://127.0.0.1:5173/</small></a>
+<a class="btn chat" href="http://127.0.0.1:8080/" target="_blank">P4RS<small>http://127.0.0.1:8080/</small></a>
+<a class="btn chat" href="http://127.0.0.1:3333/ui/" target="_blank">T3MP3ST War Room<small>http://127.0.0.1:3333/ui/</small></a>
+<a class="btn chat" href="http://127.0.0.1:8501/" target="_blank">ST3GG<small>http://127.0.0.1:8501/</small></a>
+<a class="btn chat" href="http://127.0.0.1:3366/BwanaAI" target="_blank">BwanaAI<small>http://127.0.0.1:3366/BwanaAI</small></a>
+<a class="btn" href="http://127.0.0.1:3366/monitor" target="_blank">Monitor<small>http://127.0.0.1:3366/monitor</small></a>
+<a class="btn" href="http://127.0.0.1:3366" target="_blank">Gateway<small>http://127.0.0.1:3366</small></a>
+<a class="btn" href="http://127.0.0.1:4096" target="_blank">OpenCode<small>http://127.0.0.1:4096</small></a>
+</div>
+
+<div class="cli">
+<h3>CLI commands (click to copy)</h3>
+<code id="c1">cd /step/repos/elder-plinius/OBLITERATUS &amp;&amp; uv run obliteratus ui</code><button class="copy" onclick="navigator.clipboard.writeText(document.getElementById('c1').innerText)">Copy</button>
+<code id="c2">cd /step/repos/elder-plinius/T3MP3ST &amp;&amp; npm run server:prod</code><button class="copy" onclick="navigator.clipboard.writeText(document.getElementById('c2').innerText)">Copy</button>
+<code id="c3">cd /step/repos/elder-plinius/ST3GG &amp;&amp; python3 -m streamlit run app.py --server.address 127.0.0.1</code><button class="copy" onclick="navigator.clipboard.writeText(document.getElementById('c3').innerText)">Copy</button>
+<code id="c4">systemctl --user start g0dm0d3 gl4ss p4rs</code><button class="copy" onclick="navigator.clipboard.writeText(document.getElementById('c4').innerText)">Copy</button>
+<p class="note">Services auto-start on boot. Local-only (127.0.0.1).</p>
+</div>
+</div>
+</body></html>
