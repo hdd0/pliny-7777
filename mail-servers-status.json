@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-13T19:08:04+02:00",
+  "generatedAt": "2026-11-13T19:42:35+02:00",
   "ok": true,
   "scope": "Mail + DNS integration: Mailcow, OpenShip, Exchange (corporate primary), Stalwart (DR), AD/Pi-hole/Technitium, Dynadot/Cloudflare public DNS",
   "verdict": "PASS (core) \u2014 Mailcow + OpenShip verified; DR/Stalwart offline",
@@ -37,7 +37,7 @@
     },
     {
       "name": "DNS chain",
-      "status": "PENDING",
+      "status": "FAIL",
       "detail": "stale snapshot"
     }
   ],
@@ -52,59 +52,59 @@
     "ui": {
       "ok": true,
       "status": 200,
-      "ms": 58
+      "ms": 340
     },
     "webmail": {
       "ok": true,
       "status": 200,
-      "ms": 25
+      "ms": 339
     },
     "banner": "220 mail.bwanakhasu.com ESMTP Postcow",
     "ports": [
       {
         "port": 25,
         "open": true,
-        "ms": 18
+        "ms": 33
       },
       {
         "port": 143,
         "open": true,
-        "ms": 18
+        "ms": 34
       },
       {
         "port": 465,
         "open": true,
-        "ms": 18
+        "ms": 34
       },
       {
         "port": 587,
         "open": true,
-        "ms": 18
+        "ms": 34
       },
       {
         "port": 993,
         "open": true,
-        "ms": 19
+        "ms": 34
       },
       {
         "port": 995,
         "open": true,
-        "ms": 19
+        "ms": 34
       },
       {
         "port": 4190,
         "open": true,
-        "ms": 19
+        "ms": 35
       },
       {
         "port": 8082,
         "open": true,
-        "ms": 19
+        "ms": 35
       },
       {
         "port": 8443,
         "open": true,
-        "ms": 20
+        "ms": 35
       }
     ],
     "queue": {
@@ -115,10 +115,77 @@
       "domains": 12,
       "mailboxes": 13,
       "aliases": 25
-    }
+    },
+    "mailboxes": [
+      {
+        "address": "architect@abahambeattitude.co.za",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "architect@abahambeattitude.dev",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "architect@abahambeattitude.io",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "architect@abahambeattitude.org",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "architect@abahambeattitude.tech",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "architect@bwanakhasu.co.za",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "architect@bwanakhasu.com",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "openship@bwanakhasu.one",
+        "active": true,
+        "quotaMb": 2048
+      },
+      {
+        "address": "architect@bwanakhasu.one",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "architect@randomitesells.click",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "architect@truthattitude.com",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "architect@truthattitude.org",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "architect@umuntungumuntungabantu.co.za",
+        "active": true,
+        "quotaMb": 3072
+      }
+    ]
   },
   "openship": {
-    "checkedAt": "2026-11-13T17:05:28+00:00",
+    "checkedAt": "2026-11-13T17:42:31+00:00",
     "user": "openship@bwanakhasu.one",
     "webmail": "http://127.0.0.1:8082/",
     "smtp": {
@@ -149,7 +216,7 @@
     "relay": {
       "endpoint": "127.0.0.1:25987",
       "open": true,
-      "ms": 20
+      "ms": 35
     },
     "lastVerified": {
       "at": "2026-11-13T17:24:22+02:00",
@@ -175,52 +242,44 @@
         "layer": "AD DNS",
         "name": "BWANA-DC01",
         "address": "192.168.10.1",
-        "resolves": "142.251.216.133",
+        "resolves": null,
         "role": "authoritative ad.bwanakhasu.one",
-        "status": "PASS"
+        "status": "FAIL"
       },
       {
         "layer": "AD DNS",
         "name": "BWANA-DC02",
         "address": "192.168.11.1",
-        "resolves": "142.251.216.133",
+        "resolves": null,
         "role": "secondary DC",
-        "status": "PASS"
+        "status": "FAIL"
       },
       {
         "layer": "Pi-hole",
         "name": "CT112",
         "address": "192.168.10.53",
-        "resolves": "142.251.216.133",
+        "resolves": null,
         "role": "AD forwarder + ad blocking",
-        "status": "PASS",
-        "adBlock": "0.0.0.0",
-        "ui": "302",
-        "adminApi": "401"
+        "status": "FAIL",
+        "adBlock": null,
+        "ui": null,
+        "adminApi": null
       },
       {
         "layer": "Technitium",
         "name": "CT111",
         "address": "192.168.10.54",
-        "resolves": "142.251.47.37",
+        "resolves": null,
         "role": "Pi-hole upstream, forward-only",
-        "status": "PASS",
-        "ui": "200",
-        "statsApi": "200"
+        "status": "FAIL",
+        "ui": null,
+        "statsApi": null
       }
     ],
     "ad": {
-      "zones": [
-        "_msdcs.ad.bwanakhasu.one",
-        "0.in-addr.arpa",
-        "127.in-addr.arpa",
-        "255.in-addr.arpa",
-        "ad.bwanakhasu.one"
-      ],
-      "zoneCount": 5,
-      "forwarders": [
-        "192.168.10.53"
-      ]
+      "zones": [],
+      "zoneCount": null,
+      "forwarders": []
     },
     "public": [
       {
@@ -314,32 +373,38 @@
       {
         "domain": "bwanakhasu.co.za",
         "nameservers": [
-          "ns1.dyna-ns.net.",
-          "ns2.dyna-ns.net."
+          "mckenzie.ns.cloudflare.com.",
+          "rajeev.ns.cloudflare.com."
         ],
-        "managedAt": "other",
-        "mx": [],
+        "managedAt": "Cloudflare",
+        "mx": [
+          "route1.mx.cloudflare.net.",
+          "route2.mx.cloudflare.net.",
+          "route3.mx.cloudflare.net."
+        ],
         "spf": "v=spf1 ip4:105.245.56.214 include:_spf.mx.cloudflare.net ~all",
-        "dmarc": null,
-        "mxOk": false,
+        "dmarc": "v=DMARC1; p=quarantine; rua=mailto:dmarc@bwanakhasu.co.za; adkim=s; aspf=s",
+        "mxOk": true,
         "spfOk": true,
-        "dmarcOk": false
+        "dmarcOk": true
       },
       {
         "domain": "bwanakhasu.com",
         "nameservers": [
-          "ns1.dyna-ns.net.",
-          "ns2.dyna-ns.net."
+          "angela.ns.cloudflare.com.",
+          "clark.ns.cloudflare.com."
         ],
-        "managedAt": "other",
+        "managedAt": "Cloudflare",
         "mx": [
-          "webhost.dynadot.com."
+          "route1.mx.cloudflare.net.",
+          "route2.mx.cloudflare.net.",
+          "route3.mx.cloudflare.net."
         ],
-        "spf": "v=spf1 mx include:webhost-mail-out.dynadot.com include:spf.webhost.dynadot.com ~all",
-        "dmarc": null,
+        "spf": "v=spf1 ip4:105.245.56.214 include:_spf.mx.cloudflare.net ~all",
+        "dmarc": "v=DMARC1; p=quarantine; rua=mailto:dmarc@bwanakhasu.com; adkim=s; aspf=s",
         "mxOk": true,
         "spfOk": true,
-        "dmarcOk": false
+        "dmarcOk": true
       },
       {
         "domain": "bwanakhasu.one",
@@ -430,11 +495,11 @@
     ],
     "publicSummary": {
       "total": 12,
-      "withMx": 10,
+      "withMx": 11,
       "withSpf": 11,
-      "withDmarc": 9
+      "withDmarc": 11
     },
-    "generatedAt": "2026-11-13T17:44:32+02:00"
+    "generatedAt": "2026-11-13T19:40:01+02:00"
   },
   "mailcowAdmin": "https://mail.bwanakhasu.com:8443/",
   "webmail": "http://127.0.0.1:8082/",

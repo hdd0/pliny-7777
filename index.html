@@ -243,6 +243,7 @@ tbody tr:hover{background:#fcfaff}
     <a class="nav" href="http://127.0.0.1:3370/"><span>↻</span> Bwana Sync</a>
     <a class="nav" href="http://127.0.0.1:3370/junglewolf"><span>◎</span> Junglewolf Monitor</a>
     <a class="nav" href="/terminal-sessions.html"><span>⌘</span> Terminal Sessions</a>
+    <a class="nav" href="/live-services.html"><span>◎</span> Live Services &amp; Repos</a>
     <a class="nav" href="http://127.0.0.1:3366/"><span>◉</span> Gateway 3366</a>
   </nav>
   <div class="sidebar-note">
@@ -333,6 +334,7 @@ tbody tr:hover{background:#fcfaff}
         <div class="panel-heading"><div><h2>Mail servers <span class="count" id="mail-count">—</span></h2><p>Source of truth: the 3366 OpenShip/Mailcow monitor. Read-only. Updated by the local reporter.</p></div><span class="local-badge"><i class="dot green"></i> LOCAL</span></div>
         <div class="table-scroll"><table><thead><tr><th>Component</th><th>Status</th><th>Detail</th></tr></thead><tbody id="mail-rows"><tr><td colspan="3" class="empty">Loading mail status…</td></tr></tbody></table></div>
         <footer class="table-footer"><span id="mail-verdict">Loading…</span><span>3366 /email · <a href="http://127.0.0.1:8082/" target="_blank" rel="noopener">Roundcube</a> · <a href="https://mail.bwanakhasu.com:8443/" target="_blank" rel="noopener">Mailcow admin</a> <i class="dot"></i></span></footer>
+        <div id="mail-boxes" style="padding:2px 21px 15px;display:flex;flex-wrap:wrap;gap:6px"></div>
       </div>
       <div class="panel">
         <div class="panel-heading"><div><h2>DNS chain <span class="count" id="dns-count">—</span></h2><p>Workstation → domain controllers → Pi-hole (ad blocking) → Technitium → public resolvers. Probed from DC01 over the loopback WinRM relay.</p></div><span class="local-badge"><i class="dot green"></i> LIVE</span></div>
@@ -438,6 +440,20 @@ tbody tr:hover{background:#fcfaff}
     { key: 'openship-filebrowser', name: 'FileBrowser', icon: '▤', port: 8088, url: 'http://127.0.0.1:8088/', unit: 'bwana-openship-filebrowser', cli: 'docker compose -f ~/.config/bwana-openship/compose.json restart filebrowser', desc: 'Manage shared media folders. Administrator credentials are stored in OpenBao.' },
     { key: 'openship-threadfin', name: 'Threadfin', icon: 'TV', port: 34400, url: 'http://127.0.0.1:34400/web/', unit: 'bwana-openship-threadfin', cli: 'docker compose -f ~/.config/bwana-openship/compose.json restart threadfin', desc: 'IPTV proxy. A playlist and programme guide still need to be supplied.' },
     { key: 'openship-qbt', name: 'qBittorrent', icon: '↓', port: 8090, url: 'http://127.0.0.1:8090/', unit: 'bwana-openship-qbt', cli: 'docker compose -f ~/.config/bwana-openship/compose.json restart qbt', desc: 'Local download manager. Administrator credentials are stored in OpenBao.' },
+    { key: 'uptime-kuma', name: 'Uptime Kuma', icon: '◉', port: 3008, url: 'http://127.0.0.1:3008/', desc: 'Availability monitoring for Bwana services; admin pre-seeded; credentials in OpenBao.' },
+    { key: 'grafana', name: 'Grafana', icon: '▦', port: 3007, url: 'http://127.0.0.1:3007/', desc: 'Metrics and dashboards (OpenShip-deployed). Administrator credentials are stored in OpenBao.' },
+    { key: 'prometheus', name: 'Prometheus', icon: '▤', port: 9090, url: 'http://127.0.0.1:9090/', desc: 'Metrics store (OpenShip-deployed). HTTP Basic auth; credentials in OpenBao.' },
+    { key: 'loki', name: 'Loki', icon: '▤', port: 9091, url: 'http://127.0.0.1:9091/', desc: 'Log store (OpenShip-deployed). HTTP Basic auth; credentials in OpenBao.' },
+    { key: 'alertmanager', name: 'Alertmanager', icon: '▤', port: 9093, url: 'http://127.0.0.1:9093/', desc: 'Alert routing (OpenShip-deployed). HTTP Basic auth; credentials in OpenBao.' },
+    { key: 'minio', name: 'MinIO', icon: '▤', port: 9001, url: 'http://127.0.0.1:9001/', desc: 'S3-compatible object storage (OpenShip-deployed). Root credentials in OpenBao.' },
+    { key: 'n8n', name: 'n8n', icon: '⚡', port: 8213, url: 'http://127.0.0.1:8213/', desc: 'Workflow automation (OpenShip-deployed). Owner account pending first-run.' },
+    { key: 'open-webui', name: 'Open WebUI', icon: '✦', port: 8214, url: 'http://127.0.0.1:8214/', desc: 'Self-hosted AI chat for Ollama (OpenShip-deployed). Administrator credentials are stored in OpenBao.' },
+    { key: 'wiki-js', name: 'Wiki.js', icon: '▤', port: 8215, url: 'http://127.0.0.1:8215/', desc: 'Knowledge base (OpenShip-deployed). Administrator credentials are stored in OpenBao.' },
+    { key: 'nextcloud', name: 'Nextcloud', icon: '▦', port: 8216, url: 'http://127.0.0.1:8216/', desc: 'Files, calendar and contacts (OpenShip-deployed). Administrator credentials are stored in OpenBao.' },
+    { key: 'it-tools', name: 'IT-Tools', icon: '⌘', port: 8205, url: 'http://127.0.0.1:8205/', desc: 'Browser-based developer and sysadmin utilities. No login.' },
+    { key: 'stirling-pdf', name: 'Stirling PDF', icon: '▤', port: 8209, url: 'http://127.0.0.1:8209/', desc: 'PDF toolkit (OpenShip-deployed). Administrator credentials are stored in OpenBao.' },
+    { key: 'freshrss', name: 'FreshRSS', icon: '✶', port: 8204, url: 'http://127.0.0.1:8204/', desc: 'RSS reader (OpenShip-deployed). Administrator credentials are stored in OpenBao.' },
+    { key: 'excalidraw', name: 'Excalidraw', icon: '✎', port: 8203, url: 'http://127.0.0.1:8203/', desc: 'Collaborative whiteboard. No login.' },
     { key: 'pliny-7777', name: 'Pliny Hub', icon: 'P', port: 7777, url: 'http://127.0.0.1:7777/', unit: 'pliny-7777', desc: 'This control center — one page for every local Pliny app, live PortView and CLI tooling.' },
     { key: 'g0dm0d3', name: 'G0DM0D3', icon: 'G', port: 3000, url: 'http://127.0.0.1:3000/', unit: 'g0dm0d3', desc: 'Liberated AI chat with OpenRouter and Venice keys wired from the local vault.' },
     { key: 'gl4ss', name: 'GL4SS', icon: '◈', port: 5173, url: 'http://127.0.0.1:5173/', unit: 'gl4ss', desc: 'The Looking Glass — reflective prompt and persona surface running on Vite.' },
@@ -929,6 +945,11 @@ tbody tr:hover{background:#fcfaff}
         el('nav-mail').textContent = checks.filter(function (c) { return c.status === 'PASS'; }).length + '/' + checks.length;
         el('mail-count').textContent = checks.length;
         el('mail-verdict').textContent = d.verdict || 'unknown';
+        var boxes = (d.mailcow && d.mailcow.mailboxes) || [];
+        var holder = document.getElementById('mail-boxes');
+        if (holder) holder.innerHTML = boxes.map(function (b) {
+          return '<span class="status ' + (b.active ? 'good' : 'issue') + '"><i class="dot"></i>' + esc(b.address) + ' · ' + b.quotaMb + 'MB</span>';
+        }).join('') || '<span class="meta">mailbox list unavailable</span>';
         el('mail-rows').innerHTML = checks.map(function (c) {
           return '<tr><td>' + esc(c.name) + '</td><td>' + statusCell(c.status) + '</td><td>' + esc(c.detail) + '</td></tr>';
         }).join('') || '<tr><td colspan="3" class="empty">no checks</td></tr>';
