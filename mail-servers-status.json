@@ -1,0 +1,66 @@
+{
+  "generatedAt": "2026-11-13T17:20:00+02:00",
+  "scope": "All mail-serving roles visible from the Zorin workstation",
+  "mode": "read-only audit, no configuration or DNS change",
+  "verdict": "OUTBOUND-OK / MAILCOW-UP / EXCHANGE-RELAY-ONLY / STALWART-DR-DOWN / PUBLIC-MX-NOT-CUTOVER",
+  "servers": [
+    {
+      "role": "primary-local",
+      "name": "Mailcow",
+      "hostname": "mail.bwanakhasu.com",
+      "status": "up",
+      "containers": {"up": 13, "total": 13},
+      "domains": 12,
+      "mailboxes": 12,
+      "aliases": 24,
+      "queue": "empty",
+      "ui": {"url": "https://mail.bwanakhasu.com:8443/", "http": 200},
+      "smtpBanner": "220 mail.bwanakhasu.com ESMTP Postcow",
+      "ports": [25, 110, 143, 465, 587, 993, 995, 4190],
+      "outboundTest": {"at": "2026-11-13T16:44:15+02:00", "from": "architect@truthattitude.com", "to": "howardjambo@gmail.com", "result": "250 OK via gmail-smtp-in TLSv1.3", "verified": true},
+      "inboundTest": {"at": "2026-11-13T17:07:51+02:00", "result": "reply delivered via dovecot 250 Saved", "verified": true},
+      "auth": {"spf": "ip4:105.245.56.214", "dmarc": "p=quarantine adkim=s aspf=s", "dkim": "selector dkim published"}
+    },
+    {
+      "role": "primary-corporate",
+      "name": "Exchange BWANA-EXCH-01",
+      "address": "192.168.10.20",
+      "status": "relay-only",
+      "directPorts": "unreachable from workstation",
+      "winrmRelay": {"endpoint": "127.0.0.1:25987", "state": "open", "http": "405 GET / 411 POST"},
+      "serviceHealth": "not re-verified this pass; last documented 2026-11-10",
+      "publicIngress": "none"
+    },
+    {
+      "role": "secondary-dr",
+      "name": "Stalwart",
+      "host": "NDIRANDEONE",
+      "tailnet": "100.68.157.90",
+      "status": "down",
+      "tailnetState": "offline, last seen 14h ago",
+      "ports": "all mail ports closed",
+      "container": null
+    },
+    {
+      "role": "webmail-client",
+      "name": "Roundcube",
+      "url": "http://127.0.0.1:8082/",
+      "status": "up",
+      "http": 200
+    }
+  ],
+  "publicDns": [
+    {"domain": "truthattitude.com", "mx": ["route1.mx.cloudflare.net", "route2.mx.cloudflare.net", "route3.mx.cloudflare.net"], "dmarc": "p=quarantine"},
+    {"domain": "bwanakhasu.com", "mx": ["route1.mx.cloudflare.net", "route2.mx.cloudflare.net", "route3.mx.cloudflare.net"], "dmarc": "p=none"},
+    {"domain": "bwanakhasu.co.za", "mx": ["webhost.dynadot.com"], "dmarc": "p=quarantine"},
+    {"domain": "bwanakhasu.one", "mx": [], "dmarc": null}
+  ],
+  "findings": [
+    "Mailcow is not the public MX for any domain; inbound uses the Cloudflare Email Routing path.",
+    "Exchange is reachable only through the local WinRM relay 25987; direct routing to 192.168.10.0/24 is absent.",
+    "Stalwart DR is offline, so there is no working backup MX today.",
+    "3366 /api/email/status misreports Mailcow ports as Stalwart and misses the remote Exchange guest."
+  ],
+  "report": "/step/repos/BwanaMail/docs/MAIL_SERVERS_STATUS_2026-11-13.md",
+  "liveLogTag": "MAIL-AUDIT"
+}
