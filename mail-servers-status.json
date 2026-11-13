@@ -1,66 +1,446 @@
 {
-  "generatedAt": "2026-11-13T17:20:00+02:00",
-  "scope": "All mail-serving roles visible from the Zorin workstation",
-  "mode": "read-only audit, no configuration or DNS change",
-  "verdict": "OUTBOUND-OK / MAILCOW-UP / EXCHANGE-RELAY-ONLY / STALWART-DR-DOWN / PUBLIC-MX-NOT-CUTOVER",
-  "servers": [
+  "generatedAt": "2026-11-13T19:08:04+02:00",
+  "ok": true,
+  "scope": "Mail + DNS integration: Mailcow, OpenShip, Exchange (corporate primary), Stalwart (DR), AD/Pi-hole/Technitium, Dynadot/Cloudflare public DNS",
+  "verdict": "PASS (core) \u2014 Mailcow + OpenShip verified; DR/Stalwart offline",
+  "policy": "Mailcow is the local mail platform. Exchange stays corporate PRIMARY by policy; Stalwart is DR only and is never auto-promoted. MX changes need human approval.",
+  "checks": [
     {
-      "role": "primary-local",
-      "name": "Mailcow",
-      "hostname": "mail.bwanakhasu.com",
-      "status": "up",
-      "containers": {"up": 13, "total": 13},
-      "domains": 12,
-      "mailboxes": 12,
-      "aliases": 24,
-      "queue": "empty",
-      "ui": {"url": "https://mail.bwanakhasu.com:8443/", "http": 200},
-      "smtpBanner": "220 mail.bwanakhasu.com ESMTP Postcow",
-      "ports": [25, 110, 143, 465, 587, 993, 995, 4190],
-      "outboundTest": {"at": "2026-11-13T16:44:15+02:00", "from": "architect@truthattitude.com", "to": "howardjambo@gmail.com", "result": "250 OK via gmail-smtp-in TLSv1.3", "verified": true},
-      "inboundTest": {"at": "2026-11-13T17:07:51+02:00", "result": "reply delivered via dovecot 250 Saved", "verified": true},
-      "auth": {"spf": "ip4:105.245.56.214", "dmarc": "p=quarantine adkim=s aspf=s", "dkim": "selector dkim published"}
+      "name": "Mailcow stack",
+      "status": "PASS",
+      "detail": "18/18 containers up, queue empty, UI 200"
     },
     {
-      "role": "primary-corporate",
-      "name": "Exchange BWANA-EXCH-01",
-      "address": "192.168.10.20",
-      "status": "relay-only",
-      "directPorts": "unreachable from workstation",
-      "winrmRelay": {"endpoint": "127.0.0.1:25987", "state": "open", "http": "405 GET / 411 POST"},
-      "serviceHealth": "not re-verified this pass; last documented 2026-11-10",
-      "publicIngress": "none"
+      "name": "Mailcow SMTP",
+      "status": "PASS",
+      "detail": "220 mail.bwanakhasu.com ESMTP Postcow"
     },
     {
-      "role": "secondary-dr",
-      "name": "Stalwart",
-      "host": "NDIRANDEONE",
-      "tailnet": "100.68.157.90",
-      "status": "down",
-      "tailnetState": "offline, last seen 14h ago",
-      "ports": "all mail ports closed",
-      "container": null
+      "name": "OpenShip mailbox",
+      "status": "PASS",
+      "detail": "openship@bwanakhasu.one IMAPS ok, SMTP ok"
     },
     {
-      "role": "webmail-client",
-      "name": "Roundcube",
-      "url": "http://127.0.0.1:8082/",
-      "status": "up",
-      "http": 200
+      "name": "Webmail (Roundcube)",
+      "status": "PASS",
+      "detail": "http://127.0.0.1:8082/ 200"
+    },
+    {
+      "name": "Exchange (corporate primary)",
+      "status": "PENDING",
+      "detail": "relay 127.0.0.1:25987 open; services 22/26 last verified 2026-11-13T17:24:22+02:00"
+    },
+    {
+      "name": "Stalwart (DR)",
+      "status": "FAIL",
+      "detail": "NDIRANDEONE offline; no DR receiver"
+    },
+    {
+      "name": "DNS chain",
+      "status": "PENDING",
+      "detail": "stale snapshot"
     }
   ],
-  "publicDns": [
-    {"domain": "truthattitude.com", "mx": ["route1.mx.cloudflare.net", "route2.mx.cloudflare.net", "route3.mx.cloudflare.net"], "dmarc": "p=quarantine"},
-    {"domain": "bwanakhasu.com", "mx": ["route1.mx.cloudflare.net", "route2.mx.cloudflare.net", "route3.mx.cloudflare.net"], "dmarc": "p=none"},
-    {"domain": "bwanakhasu.co.za", "mx": ["webhost.dynadot.com"], "dmarc": "p=quarantine"},
-    {"domain": "bwanakhasu.one", "mx": [], "dmarc": null}
-  ],
-  "findings": [
-    "Mailcow is not the public MX for any domain; inbound uses the Cloudflare Email Routing path.",
-    "Exchange is reachable only through the local WinRM relay 25987; direct routing to 192.168.10.0/24 is absent.",
-    "Stalwart DR is offline, so there is no working backup MX today.",
-    "3366 /api/email/status misreports Mailcow ports as Stalwart and misses the remote Exchange guest."
-  ],
-  "report": "/step/repos/BwanaMail/docs/MAIL_SERVERS_STATUS_2026-11-13.md",
-  "liveLogTag": "MAIL-AUDIT"
+  "mailcow": {
+    "role": "PRIMARY \u2014 local platform",
+    "hostname": "mail.bwanakhasu.com",
+    "up": true,
+    "containers": {
+      "up": 18,
+      "total": 18
+    },
+    "ui": {
+      "ok": true,
+      "status": 200,
+      "ms": 58
+    },
+    "webmail": {
+      "ok": true,
+      "status": 200,
+      "ms": 25
+    },
+    "banner": "220 mail.bwanakhasu.com ESMTP Postcow",
+    "ports": [
+      {
+        "port": 25,
+        "open": true,
+        "ms": 18
+      },
+      {
+        "port": 143,
+        "open": true,
+        "ms": 18
+      },
+      {
+        "port": 465,
+        "open": true,
+        "ms": 18
+      },
+      {
+        "port": 587,
+        "open": true,
+        "ms": 18
+      },
+      {
+        "port": 993,
+        "open": true,
+        "ms": 19
+      },
+      {
+        "port": 995,
+        "open": true,
+        "ms": 19
+      },
+      {
+        "port": 4190,
+        "open": true,
+        "ms": 19
+      },
+      {
+        "port": 8082,
+        "open": true,
+        "ms": 19
+      },
+      {
+        "port": 8443,
+        "open": true,
+        "ms": 20
+      }
+    ],
+    "queue": {
+      "empty": true,
+      "messages": 0
+    },
+    "counts": {
+      "domains": 12,
+      "mailboxes": 13,
+      "aliases": 25
+    }
+  },
+  "openship": {
+    "checkedAt": "2026-11-13T17:05:28+00:00",
+    "user": "openship@bwanakhasu.one",
+    "webmail": "http://127.0.0.1:8082/",
+    "smtp": {
+      "host": "mail.bwanakhasu.com",
+      "port": "587"
+    },
+    "imap": {
+      "host": "mail.bwanakhasu.com",
+      "port": "993"
+    },
+    "imaps": {
+      "ok": true,
+      "port": 993,
+      "folders": 6,
+      "inboxMessages": 0
+    },
+    "smtpAuth": {
+      "ok": true,
+      "port": 587,
+      "auth": "accepted"
+    },
+    "ok": true
+  },
+  "exchange": {
+    "role": "PRIMARY \u2014 corporate",
+    "host": "BWANA-EXCH-01",
+    "address": "192.168.10.20",
+    "relay": {
+      "endpoint": "127.0.0.1:25987",
+      "open": true,
+      "ms": 20
+    },
+    "lastVerified": {
+      "at": "2026-11-13T17:24:22+02:00",
+      "host": "BWANA-EXCH-01",
+      "servicesRunning": 22,
+      "servicesTotal": 26,
+      "owa": 403,
+      "note": "Authenticated WinRM through loopback relay 127.0.0.1:25987"
+    },
+    "reachable": true
+  },
+  "stalwart": {
+    "role": "SECONDARY / DR",
+    "host": "NDIRANDEONE",
+    "tailnet": "100.68.157.90",
+    "up": false,
+    "online": false,
+    "lastSeen": "2026-11-13T00:41:17.1Z"
+  },
+  "dns": {
+    "chain": [
+      {
+        "layer": "AD DNS",
+        "name": "BWANA-DC01",
+        "address": "192.168.10.1",
+        "resolves": "142.251.216.133",
+        "role": "authoritative ad.bwanakhasu.one",
+        "status": "PASS"
+      },
+      {
+        "layer": "AD DNS",
+        "name": "BWANA-DC02",
+        "address": "192.168.11.1",
+        "resolves": "142.251.216.133",
+        "role": "secondary DC",
+        "status": "PASS"
+      },
+      {
+        "layer": "Pi-hole",
+        "name": "CT112",
+        "address": "192.168.10.53",
+        "resolves": "142.251.216.133",
+        "role": "AD forwarder + ad blocking",
+        "status": "PASS",
+        "adBlock": "0.0.0.0",
+        "ui": "302",
+        "adminApi": "401"
+      },
+      {
+        "layer": "Technitium",
+        "name": "CT111",
+        "address": "192.168.10.54",
+        "resolves": "142.251.47.37",
+        "role": "Pi-hole upstream, forward-only",
+        "status": "PASS",
+        "ui": "200",
+        "statsApi": "200"
+      }
+    ],
+    "ad": {
+      "zones": [
+        "_msdcs.ad.bwanakhasu.one",
+        "0.in-addr.arpa",
+        "127.in-addr.arpa",
+        "255.in-addr.arpa",
+        "ad.bwanakhasu.one"
+      ],
+      "zoneCount": 5,
+      "forwarders": [
+        "192.168.10.53"
+      ]
+    },
+    "public": [
+      {
+        "domain": "abahambeattitude.co.za",
+        "nameservers": [
+          "mckenzie.ns.cloudflare.com.",
+          "rajeev.ns.cloudflare.com."
+        ],
+        "managedAt": "Cloudflare",
+        "mx": [
+          "route1.mx.cloudflare.net.",
+          "route2.mx.cloudflare.net.",
+          "route3.mx.cloudflare.net."
+        ],
+        "spf": "v=spf1 ip4:105.245.56.214 include:_spf.mx.cloudflare.net ~all",
+        "dmarc": "v=DMARC1; p=quarantine; rua=mailto:dmarc@abahambeattitude.co.za; adkim=s; aspf=s",
+        "mxOk": true,
+        "spfOk": true,
+        "dmarcOk": true
+      },
+      {
+        "domain": "abahambeattitude.dev",
+        "nameservers": [
+          "angela.ns.cloudflare.com.",
+          "clark.ns.cloudflare.com."
+        ],
+        "managedAt": "Cloudflare",
+        "mx": [
+          "route1.mx.cloudflare.net.",
+          "route2.mx.cloudflare.net.",
+          "route3.mx.cloudflare.net."
+        ],
+        "spf": "v=spf1 ip4:105.245.56.214 include:_spf.mx.cloudflare.net ~all",
+        "dmarc": "v=DMARC1; p=quarantine; rua=mailto:dmarc@abahambeattitude.dev; adkim=s; aspf=s",
+        "mxOk": true,
+        "spfOk": true,
+        "dmarcOk": true
+      },
+      {
+        "domain": "abahambeattitude.io",
+        "nameservers": [
+          "angela.ns.cloudflare.com.",
+          "clark.ns.cloudflare.com."
+        ],
+        "managedAt": "Cloudflare",
+        "mx": [
+          "mail.bwanakhasu.com."
+        ],
+        "spf": "v=spf1 mx include:_spf.mailcow.bwanakhasu.com ~all",
+        "dmarc": "v=DMARC1; p=quarantine; rua=mailto:dmarc@abahambeattitude.io; adkim=s; aspf=s",
+        "mxOk": true,
+        "spfOk": true,
+        "dmarcOk": true
+      },
+      {
+        "domain": "abahambeattitude.org",
+        "nameservers": [
+          "angela.ns.cloudflare.com.",
+          "clark.ns.cloudflare.com."
+        ],
+        "managedAt": "Cloudflare",
+        "mx": [
+          "route1.mx.cloudflare.net.",
+          "route2.mx.cloudflare.net.",
+          "route3.mx.cloudflare.net."
+        ],
+        "spf": "v=spf1 ip4:105.245.56.214 include:_spf.mx.cloudflare.net ~all",
+        "dmarc": "v=DMARC1; p=quarantine; rua=mailto:dmarc@abahambeattitude.org; adkim=s; aspf=s",
+        "mxOk": true,
+        "spfOk": true,
+        "dmarcOk": true
+      },
+      {
+        "domain": "abahambeattitude.tech",
+        "nameservers": [
+          "angela.ns.cloudflare.com.",
+          "clark.ns.cloudflare.com."
+        ],
+        "managedAt": "Cloudflare",
+        "mx": [
+          "route1.mx.cloudflare.net.",
+          "route2.mx.cloudflare.net.",
+          "route3.mx.cloudflare.net."
+        ],
+        "spf": "v=spf1 ip4:105.245.56.214 include:_spf.mx.cloudflare.net ~all",
+        "dmarc": "v=DMARC1; p=quarantine; rua=mailto:dmarc@abahambeattitude.tech; adkim=s; aspf=s",
+        "mxOk": true,
+        "spfOk": true,
+        "dmarcOk": true
+      },
+      {
+        "domain": "bwanakhasu.co.za",
+        "nameservers": [
+          "ns1.dyna-ns.net.",
+          "ns2.dyna-ns.net."
+        ],
+        "managedAt": "other",
+        "mx": [],
+        "spf": "v=spf1 ip4:105.245.56.214 include:_spf.mx.cloudflare.net ~all",
+        "dmarc": null,
+        "mxOk": false,
+        "spfOk": true,
+        "dmarcOk": false
+      },
+      {
+        "domain": "bwanakhasu.com",
+        "nameservers": [
+          "ns1.dyna-ns.net.",
+          "ns2.dyna-ns.net."
+        ],
+        "managedAt": "other",
+        "mx": [
+          "webhost.dynadot.com."
+        ],
+        "spf": "v=spf1 mx include:webhost-mail-out.dynadot.com include:spf.webhost.dynadot.com ~all",
+        "dmarc": null,
+        "mxOk": true,
+        "spfOk": true,
+        "dmarcOk": false
+      },
+      {
+        "domain": "bwanakhasu.one",
+        "nameservers": [
+          "irena.ns.cloudflare.com.",
+          "ishaan.ns.cloudflare.com."
+        ],
+        "managedAt": "Cloudflare",
+        "mx": [],
+        "spf": null,
+        "dmarc": null,
+        "mxOk": false,
+        "spfOk": false,
+        "dmarcOk": false
+      },
+      {
+        "domain": "randomitesells.click",
+        "nameservers": [
+          "angela.ns.cloudflare.com.",
+          "clark.ns.cloudflare.com."
+        ],
+        "managedAt": "Cloudflare",
+        "mx": [
+          "route1.mx.cloudflare.net.",
+          "route2.mx.cloudflare.net.",
+          "route3.mx.cloudflare.net."
+        ],
+        "spf": "v=spf1 ip4:105.245.56.214 include:_spf.mx.cloudflare.net ~all",
+        "dmarc": "v=DMARC1; p=quarantine; rua=mailto:dmarc@randomitesells.click; adkim=s; aspf=s",
+        "mxOk": true,
+        "spfOk": true,
+        "dmarcOk": true
+      },
+      {
+        "domain": "truthattitude.com",
+        "nameservers": [
+          "angela.ns.cloudflare.com.",
+          "clark.ns.cloudflare.com."
+        ],
+        "managedAt": "Cloudflare",
+        "mx": [
+          "route1.mx.cloudflare.net.",
+          "route2.mx.cloudflare.net.",
+          "route3.mx.cloudflare.net."
+        ],
+        "spf": "v=spf1 ip4:105.245.56.214 include:_spf.mx.cloudflare.net ~all",
+        "dmarc": "v=DMARC1; p=quarantine; rua=mailto:dmarc@truthattitude.com; adkim=s; aspf=s",
+        "mxOk": true,
+        "spfOk": true,
+        "dmarcOk": true
+      },
+      {
+        "domain": "truthattitude.org",
+        "nameservers": [
+          "angela.ns.cloudflare.com.",
+          "clark.ns.cloudflare.com."
+        ],
+        "managedAt": "Cloudflare",
+        "mx": [
+          "route1.mx.cloudflare.net.",
+          "route2.mx.cloudflare.net.",
+          "route3.mx.cloudflare.net."
+        ],
+        "spf": "v=spf1 ip4:105.245.56.214 include:_spf.mx.cloudflare.net ~all",
+        "dmarc": "v=DMARC1; p=quarantine; rua=mailto:dmarc@truthattitude.org; adkim=s; aspf=s",
+        "mxOk": true,
+        "spfOk": true,
+        "dmarcOk": true
+      },
+      {
+        "domain": "umuntungumuntungabantu.co.za",
+        "nameservers": [
+          "mckenzie.ns.cloudflare.com.",
+          "rajeev.ns.cloudflare.com."
+        ],
+        "managedAt": "Cloudflare",
+        "mx": [
+          "route1.mx.cloudflare.net.",
+          "route2.mx.cloudflare.net.",
+          "route3.mx.cloudflare.net."
+        ],
+        "spf": "v=spf1 ip4:105.245.56.214 include:_spf.mx.cloudflare.net ~all",
+        "dmarc": "v=DMARC1; p=quarantine; rua=mailto:dmarc@umuntungumuntungabantu.co.za; adkim=s; aspf=s",
+        "mxOk": true,
+        "spfOk": true,
+        "dmarcOk": true
+      }
+    ],
+    "publicSummary": {
+      "total": 12,
+      "withMx": 10,
+      "withSpf": 11,
+      "withDmarc": 9
+    },
+    "generatedAt": "2026-11-13T17:44:32+02:00"
+  },
+  "mailcowAdmin": "https://mail.bwanakhasu.com:8443/",
+  "webmail": "http://127.0.0.1:8082/",
+  "surfaces": {
+    "3370": "/api/mail-status",
+    "7777": "/mail-servers-status.json",
+    "3366": "http://127.0.0.1:3366/email"
+  }
 }

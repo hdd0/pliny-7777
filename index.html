@@ -236,10 +236,13 @@ tbody tr:hover{background:#fcfaff}
     <button class="nav active" data-view="overview"><span>▦</span> Overview</button>
     <button class="nav" data-view="apps"><span>◫</span> Apps <b id="nav-apps">—</b></button>
     <button class="nav" data-view="ports"><span>⌘</span> PortView <b id="nav-ports">—</b></button>
+    <button class="nav" data-view="mail"><span>✉</span> Mail &amp; DNS<b id="nav-mail">—</b></button>
     <button class="nav" data-view="tools"><span>⌨</span> Tools &amp; CLI</button>
     <button class="nav" data-view="keys"><span>⚿</span> Keys <b id="nav-keys">—</b></button>
     <button class="nav" data-view="chat"><span>✦</span> Chat</button>
     <a class="nav" href="http://127.0.0.1:3370/"><span>↻</span> Bwana Sync</a>
+    <a class="nav" href="http://127.0.0.1:3370/junglewolf"><span>◎</span> Junglewolf Monitor</a>
+    <a class="nav" href="/terminal-sessions.html"><span>⌘</span> Terminal Sessions</a>
     <a class="nav" href="http://127.0.0.1:3366/"><span>◉</span> Gateway 3366</a>
   </nav>
   <div class="sidebar-note">
@@ -296,7 +299,7 @@ tbody tr:hover{background:#fcfaff}
     <section id="apps-view" class="view" hidden>
       <div class="panel">
         <div class="panel-heading">
-          <div><h2>Pliny applications <span class="count" id="apps-count">—</span></h2><p>All apps run as systemd --user services and start on boot. Each card opens a local URL and can copy its restart command.</p></div>
+          <div><h2>Pliny applications <span class="count" id="apps-count">—</span></h2><p>Apps use persistent user services or Docker containers. Each card opens a local URL and can copy its restart command.</p></div>
           <span class="local-badge"><i class="dot green"></i> ALL LOCAL</span>
         </div>
         <div class="app-grid" id="app-grid"><div class="empty">Loading apps…</div></div>
@@ -321,6 +324,20 @@ tbody tr:hover{background:#fcfaff}
           </table>
         </div>
         <footer class="table-footer"><span id="shown-count">Loading…</span><span>Source: /_gateway/api/services + /_gateway/api/ports <i class="dot"></i></span></footer>
+      </div>
+    </section>
+
+    <!-- MAIL & DNS -->
+    <section id="mail-view" class="view" hidden>
+      <div class="panel">
+        <div class="panel-heading"><div><h2>Mail servers <span class="count" id="mail-count">—</span></h2><p>Source of truth: the 3366 OpenShip/Mailcow monitor. Read-only. Updated by the local reporter.</p></div><span class="local-badge"><i class="dot green"></i> LOCAL</span></div>
+        <div class="table-scroll"><table><thead><tr><th>Component</th><th>Status</th><th>Detail</th></tr></thead><tbody id="mail-rows"><tr><td colspan="3" class="empty">Loading mail status…</td></tr></tbody></table></div>
+        <footer class="table-footer"><span id="mail-verdict">Loading…</span><span>3366 /email · <a href="http://127.0.0.1:8082/" target="_blank" rel="noopener">Roundcube</a> · <a href="https://mail.bwanakhasu.com:8443/" target="_blank" rel="noopener">Mailcow admin</a> <i class="dot"></i></span></footer>
+      </div>
+      <div class="panel">
+        <div class="panel-heading"><div><h2>DNS chain <span class="count" id="dns-count">—</span></h2><p>Workstation → domain controllers → Pi-hole (ad blocking) → Technitium → public resolvers. Probed from DC01 over the loopback WinRM relay.</p></div><span class="local-badge"><i class="dot green"></i> LIVE</span></div>
+        <div class="table-scroll"><table><thead><tr><th>Layer</th><th>Address</th><th>Status</th><th>Resolves</th></tr></thead><tbody id="dns-rows"><tr><td colspan="4" class="empty">Loading DNS chain…</td></tr></tbody></table></div>
+        <footer class="table-footer"><span id="dns-meta">Loading…</span><span>AD forwarders → Pi-hole 192.168.10.53 → Technitium 192.168.10.54 <i class="dot"></i></span></footer>
       </div>
     </section>
 
@@ -381,15 +398,15 @@ tbody tr:hover{background:#fcfaff}
           <span class="local-badge"><i class="dot green"></i> LOCAL MODELS</span>
         </div>
         <div class="chat-bar">
-          <button class="tab active" data-src="http://127.0.0.1:3000/">G0DM0D3 chat :3000</button>
-          <button class="tab" data-src="http://127.0.0.1:3366/">BwanaAI Hub :3366</button>
+          <button class="tab active" data-src="http://127.0.0.1:3366/bwana-chat">BwanaAI Auto Chat · 3366</button>
+          <button class="tab" data-src="http://127.0.0.1:3366/">BwanaAI Hub · 3366</button>
           <button class="tab" data-src="http://127.0.0.1:5173/">GL4SS :5173</button>
         </div>
-        <iframe id="chat-frame" class="chat-frame" src="http://127.0.0.1:3000/" title="Local chat" loading="lazy"></iframe>
+        <iframe id="chat-frame" class="chat-frame" src="http://127.0.0.1:3366/bwana-chat" title="BwanaAI automatic routing chat" loading="lazy"></iframe>
         <div class="chat-note">
           <span>OpenAI-compatible API: <code>http://127.0.0.1:3366/v1</code></span>
           <span>Model alias: <code>bwanai/auto</code></span>
-          <span>Local only — no paid provider fallback</span>
+          <span>Auto routing · FREE_ONLY · provider failover</span>
         </div>
       </div>
     </section>
@@ -415,6 +432,12 @@ tbody tr:hover{background:#fcfaff}
 
   // App catalogue: URLs are local only. cli is a runnable command.
   var APPS = [
+    { key: 'openship-platform', name: 'OpenShip platform', icon: 'OS', port: 3001, url: 'http://127.0.0.1:3001/', unit: 'openship', desc: 'Official deployment platform v0.9.12 with66 GitHub repository links; admin credentials in OpenBao and Vaultwarden.' },
+    { key: 'bwana-openship', name: 'Bwana Media Control', icon: '▶', port: 3015, url: 'http://127.0.0.1:3015/', unit: 'bwana-openship', desc: 'Local control page for the installed music and media stack.' },
+    { key: 'openship-jellyfin', name: 'Jellyfin', icon: '♫', port: 8096, url: 'http://127.0.0.1:8096/web/', unit: 'bwana-openship-jellyfin', cli: 'docker compose -f ~/.config/bwana-openship/compose.json restart jellyfin', desc: 'Music and Videos libraries. Administrator credentials are stored in OpenBao.' },
+    { key: 'openship-filebrowser', name: 'FileBrowser', icon: '▤', port: 8088, url: 'http://127.0.0.1:8088/', unit: 'bwana-openship-filebrowser', cli: 'docker compose -f ~/.config/bwana-openship/compose.json restart filebrowser', desc: 'Manage shared media folders. Administrator credentials are stored in OpenBao.' },
+    { key: 'openship-threadfin', name: 'Threadfin', icon: 'TV', port: 34400, url: 'http://127.0.0.1:34400/web/', unit: 'bwana-openship-threadfin', cli: 'docker compose -f ~/.config/bwana-openship/compose.json restart threadfin', desc: 'IPTV proxy. A playlist and programme guide still need to be supplied.' },
+    { key: 'openship-qbt', name: 'qBittorrent', icon: '↓', port: 8090, url: 'http://127.0.0.1:8090/', unit: 'bwana-openship-qbt', cli: 'docker compose -f ~/.config/bwana-openship/compose.json restart qbt', desc: 'Local download manager. Administrator credentials are stored in OpenBao.' },
     { key: 'pliny-7777', name: 'Pliny Hub', icon: 'P', port: 7777, url: 'http://127.0.0.1:7777/', unit: 'pliny-7777', desc: 'This control center — one page for every local Pliny app, live PortView and CLI tooling.' },
     { key: 'g0dm0d3', name: 'G0DM0D3', icon: 'G', port: 3000, url: 'http://127.0.0.1:3000/', unit: 'g0dm0d3', desc: 'Liberated AI chat with OpenRouter and Venice keys wired from the local vault.' },
     { key: 'gl4ss', name: 'GL4SS', icon: '◈', port: 5173, url: 'http://127.0.0.1:5173/', unit: 'gl4ss', desc: 'The Looking Glass — reflective prompt and persona surface running on Vite.' },
@@ -523,7 +546,7 @@ tbody tr:hover{background:#fcfaff}
     var host = el('app-grid');
     host.innerHTML = APPS.map(function (a) {
       var s = appStatus(a.port);
-      var cmd = 'systemctl --user restart ' + a.unit + ' && xdg-open ' + a.url;
+      var cmd = (a.cli || 'systemctl --user restart ' + a.unit) + ' && xdg-open ' + a.url;
       return '<article class="app-card">' +
         '<div class="app-card-top"><span class="app-icon">' + esc(a.icon) + '</span><div><h3>' + esc(a.name) + '</h3><small>127.0.0.1:' + a.port + ' · ' + esc(a.unit) + '</small></div></div>' +
         '<p>' + esc(a.desc) + '</p>' +
@@ -752,13 +775,14 @@ tbody tr:hover{background:#fcfaff}
   // ---- views ----
   var TITLES = {
     overview: ['Local Control Center', 'Every Pliny app on one page. Live ports come from the BwanaAI gateway; launch links always point at a local service.'],
-    apps: ['Pliny Applications', 'Ten self-hosted apps with live status, direct local URLs and copyable restart commands.'],
+    apps: ['Pliny Applications', 'Local apps and media services with live status, direct URLs and copyable restart commands.'],
     ports: ['PortView', 'Full service index from the gateway: groups, ports, endpoints and probe results.'],
+    mail: ['Mail & DNS', 'Mailcow, OpenShip, Exchange, Stalwart and the AD/Pi-hole/Technitium DNS chain — live from the 3366 monitor.'],
     tools: ['Tools & CLI', 'Runnable commands for services, MCP registration and secrets hygiene.'],
     keys: ['Service Keys', 'Provider credentials stored in OpenBao, distributed to every app automatically. Names and fingerprints only.'],
     chat: ['Local Chat', 'Embedded local AI surfaces served on loopback only.']
   };
-  var CRUMBS = { overview: 'Overview', apps: 'Apps', ports: 'PortView', tools: 'Tools & CLI', keys: 'Keys', chat: 'Chat' };
+  var CRUMBS = { overview: 'Overview', apps: 'Apps', ports: 'PortView', mail: 'Mail & DNS', tools: 'Tools & CLI', keys: 'Keys', chat: 'Chat' };
 
   function setView(name, push) {
     if (!TITLES[name]) name = 'overview';
@@ -770,6 +794,7 @@ tbody tr:hover{background:#fcfaff}
     document.title = TITLES[name][0] + ' — Pliny 7777';
     if (push && location.hash !== '#' + name) history.replaceState(null, '', '#' + name);
     if (name === 'keys' && !state.auth) loadAuth();
+    if (name === 'mail') loadMail();
     window.scrollTo(0, 0);
   }
 
@@ -816,7 +841,7 @@ tbody tr:hover{background:#fcfaff}
     el('tool-mcp').innerHTML = MCP.map(function (c) {
       return '<div class="tool-row"><span class="label">' + esc(c[0]) + '</span><code>' + esc(c[1]) + '</code>' +
         '<button class="copy" data-copy="' + esc(c[1]) + '">Copy</button></div>';
-    }).join('') + '<p class="note">All ten Pliny tools plus <code>bwana-auth</code> are registered for OpenCode, Codex and Copilot. OBLITERATUS and T3MP3ST are shared across all three.</p>';
+    }).join('') + '<p class="note"><strong>MCP configuration snapshot · 2026-11-09:</strong> Codex has 13, OpenCode 12 and VS Code 10 configured servers. Of the Pliny apps, <code>obliteratus</code> and <code>t3mp3st</code> are registered in all three. <code>bwana-auth</code> is also common as the provider-key management MCP. An app service being online does not mean it exposes an MCP server. Use the commands above to inspect current registrations.</p>';
 
     el('tool-secrets').innerHTML = SECRETS.map(function (c) {
       return '<div class="tool-row"><span class="label">' + esc(c[0]) + '</span><code>' + esc(c[1]) + '</code>' +
@@ -891,13 +916,47 @@ tbody tr:hover{background:#fcfaff}
 
   window.addEventListener('hashchange', function () { setView(fromHash(), false); });
 
+  // ---- mail & DNS panel ----
+  function statusCell(s) {
+    var cls = s === 'PASS' ? 'good' : (s === 'FAIL' ? 'issue' : 'warn');
+    return '<span class="status ' + cls + '"><i class="dot"></i>' + esc(s) + '</span>';
+  }
+  function loadMail() {
+    return fetch('mail-servers-status.json?ts=' + Date.now(), { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('mail-servers-status ' + r.status); return r.json(); })
+      .then(function (d) {
+        var checks = d.checks || [];
+        el('nav-mail').textContent = checks.filter(function (c) { return c.status === 'PASS'; }).length + '/' + checks.length;
+        el('mail-count').textContent = checks.length;
+        el('mail-verdict').textContent = d.verdict || 'unknown';
+        el('mail-rows').innerHTML = checks.map(function (c) {
+          return '<tr><td>' + esc(c.name) + '</td><td>' + statusCell(c.status) + '</td><td>' + esc(c.detail) + '</td></tr>';
+        }).join('') || '<tr><td colspan="3" class="empty">no checks</td></tr>';
+        var chain = (d.dns && d.dns.chain) || [];
+        el('dns-count').textContent = chain.length;
+        el('dns-rows').innerHTML = chain.map(function (c) {
+          return '<tr><td>' + esc(c.layer + ': ' + c.name) + '</td><td class="mono">' + esc(c.address) + '</td><td>' + statusCell(c.status) + '</td><td class="mono">' + esc(c.resolves) + (c.adBlock ? ' (adblock ' + esc(c.adBlock) + ')' : '') + '</td></tr>';
+        }).join('') || '<tr><td colspan="4" class="empty">DNS chain unavailable — run scripts/report/dns-status.py</td></tr>';
+        var pub = (d.dns && d.dns.publicSummary) || {};
+        el('dns-meta').textContent = 'Public: ' + (pub.withMx || 0) + '/' + (pub.total || 0) + ' MX · ' + (pub.withSpf || 0) + '/' + (pub.total || 0) + ' SPF · ' + (pub.withDmarc || 0) + '/' + (pub.total || 0) + ' DMARC · generated ' + (d.generatedAt || '');
+      })
+      .catch(function (e) {
+        el('mail-rows').innerHTML = '<tr><td colspan="3" class="empty">' + esc(String(e && e.message || e)) + '</td></tr>';
+        el('dns-rows').innerHTML = '<tr><td colspan="4" class="empty">unavailable</td></tr>';
+        el('mail-verdict').textContent = 'UNAVAILABLE';
+      });
+  }
+
   // ---- boot ----
   renderCommands();
   setView(fromHash(), false);
   load();
   loadAuth();
+  loadMail();
   setInterval(load, 15000);
+  setInterval(loadMail, 30000);
 })();
 </script>
+<script src="bwana-launch.js" defer></script>
 </body>
 </html>
