@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-13T19:42:35+02:00",
+  "generatedAt": "2026-11-14T01:35:02+02:00",
   "ok": true,
   "scope": "Mail + DNS integration: Mailcow, OpenShip, Exchange (corporate primary), Stalwart (DR), AD/Pi-hole/Technitium, Dynadot/Cloudflare public DNS",
   "verdict": "PASS (core) \u2014 Mailcow + OpenShip verified; DR/Stalwart offline",
@@ -37,8 +37,8 @@
     },
     {
       "name": "DNS chain",
-      "status": "FAIL",
-      "detail": "stale snapshot"
+      "status": "PASS",
+      "detail": "BWANA-DC01 142.251.216.5 \u2192 BWANA-DC02 142.251.216.5 \u2192 CT112 142.251.216.5 \u2192 CT111 142.251.47.5"
     }
   ],
   "mailcow": {
@@ -52,59 +52,59 @@
     "ui": {
       "ok": true,
       "status": 200,
-      "ms": 340
+      "ms": 86
     },
     "webmail": {
       "ok": true,
       "status": 200,
-      "ms": 339
+      "ms": 72
     },
     "banner": "220 mail.bwanakhasu.com ESMTP Postcow",
     "ports": [
       {
         "port": 25,
         "open": true,
-        "ms": 33
+        "ms": 52
       },
       {
         "port": 143,
         "open": true,
-        "ms": 34
+        "ms": 56
       },
       {
         "port": 465,
         "open": true,
-        "ms": 34
+        "ms": 57
       },
       {
         "port": 587,
         "open": true,
-        "ms": 34
+        "ms": 58
       },
       {
         "port": 993,
         "open": true,
-        "ms": 34
+        "ms": 59
       },
       {
         "port": 995,
         "open": true,
-        "ms": 34
+        "ms": 58
       },
       {
         "port": 4190,
         "open": true,
-        "ms": 35
+        "ms": 65
       },
       {
         "port": 8082,
         "open": true,
-        "ms": 35
+        "ms": 66
       },
       {
         "port": 8443,
         "open": true,
-        "ms": 35
+        "ms": 66
       }
     ],
     "queue": {
@@ -113,12 +113,57 @@
     },
     "counts": {
       "domains": 12,
-      "mailboxes": 13,
-      "aliases": 25
+      "mailboxes": 85,
+      "aliases": 97
     },
     "mailboxes": [
       {
+        "address": "hd@abahambeattitude.co.za",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "info@abahambeattitude.co.za",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "admin@abahambeattitude.co.za",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
         "address": "architect@abahambeattitude.co.za",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "howardjambo@abahambeattitude.co.za",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "administrator@abahambeattitude.co.za",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "howarddavidjambo@abahambeattitude.co.za",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "hd@abahambeattitude.dev",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "info@abahambeattitude.dev",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "admin@abahambeattitude.dev",
         "active": true,
         "quotaMb": 3072
       },
@@ -128,7 +173,67 @@
         "quotaMb": 3072
       },
       {
+        "address": "howardjambo@abahambeattitude.dev",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "administrator@abahambeattitude.dev",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "howarddavidjambo@abahambeattitude.dev",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "hd@abahambeattitude.io",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "info@abahambeattitude.io",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "admin@abahambeattitude.io",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
         "address": "architect@abahambeattitude.io",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "howardjambo@abahambeattitude.io",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "administrator@abahambeattitude.io",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "howarddavidjambo@abahambeattitude.io",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "hd@abahambeattitude.org",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "info@abahambeattitude.org",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "admin@abahambeattitude.org",
         "active": true,
         "quotaMb": 3072
       },
@@ -138,7 +243,67 @@
         "quotaMb": 3072
       },
       {
+        "address": "howardjambo@abahambeattitude.org",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "administrator@abahambeattitude.org",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "howarddavidjambo@abahambeattitude.org",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "hd@abahambeattitude.tech",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "info@abahambeattitude.tech",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "admin@abahambeattitude.tech",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
         "address": "architect@abahambeattitude.tech",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "howardjambo@abahambeattitude.tech",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "administrator@abahambeattitude.tech",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "howarddavidjambo@abahambeattitude.tech",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "hd@bwanakhasu.co.za",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "info@bwanakhasu.co.za",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "admin@bwanakhasu.co.za",
         "active": true,
         "quotaMb": 3072
       },
@@ -148,7 +313,67 @@
         "quotaMb": 3072
       },
       {
+        "address": "howardjambo@bwanakhasu.co.za",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "administrator@bwanakhasu.co.za",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "howarddavidjambo@bwanakhasu.co.za",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "hd@bwanakhasu.com",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "info@bwanakhasu.com",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "admin@bwanakhasu.com",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
         "address": "architect@bwanakhasu.com",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "howardjambo@bwanakhasu.com",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "administrator@bwanakhasu.com",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "howarddavidjambo@bwanakhasu.com",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "hd@bwanakhasu.one",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "info@bwanakhasu.one",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "admin@bwanakhasu.one",
         "active": true,
         "quotaMb": 3072
       },
@@ -163,7 +388,67 @@
         "quotaMb": 3072
       },
       {
+        "address": "howardjambo@bwanakhasu.one",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "administrator@bwanakhasu.one",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "howarddavidjambo@bwanakhasu.one",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "hd@randomitesells.click",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "info@randomitesells.click",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "admin@randomitesells.click",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
         "address": "architect@randomitesells.click",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "howardjambo@randomitesells.click",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "administrator@randomitesells.click",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "howarddavidjambo@randomitesells.click",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "hd@truthattitude.com",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "info@truthattitude.com",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "admin@truthattitude.com",
         "active": true,
         "quotaMb": 3072
       },
@@ -173,7 +458,67 @@
         "quotaMb": 3072
       },
       {
+        "address": "howardjambo@truthattitude.com",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "administrator@truthattitude.com",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "howarddavidjambo@truthattitude.com",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "hd@truthattitude.org",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "info@truthattitude.org",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "admin@truthattitude.org",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
         "address": "architect@truthattitude.org",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "howardjambo@truthattitude.org",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "administrator@truthattitude.org",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "howarddavidjambo@truthattitude.org",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "hd@umuntungumuntungabantu.co.za",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "info@umuntungumuntungabantu.co.za",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "admin@umuntungumuntungabantu.co.za",
         "active": true,
         "quotaMb": 3072
       },
@@ -181,11 +526,26 @@
         "address": "architect@umuntungumuntungabantu.co.za",
         "active": true,
         "quotaMb": 3072
+      },
+      {
+        "address": "howardjambo@umuntungumuntungabantu.co.za",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "administrator@umuntungumuntungabantu.co.za",
+        "active": true,
+        "quotaMb": 3072
+      },
+      {
+        "address": "howarddavidjambo@umuntungumuntungabantu.co.za",
+        "active": true,
+        "quotaMb": 3072
       }
     ]
   },
   "openship": {
-    "checkedAt": "2026-11-13T17:42:31+00:00",
+    "checkedAt": "2026-11-13T23:32:16+00:00",
     "user": "openship@bwanakhasu.one",
     "webmail": "http://127.0.0.1:8082/",
     "smtp": {
@@ -216,7 +576,7 @@
     "relay": {
       "endpoint": "127.0.0.1:25987",
       "open": true,
-      "ms": 35
+      "ms": 68
     },
     "lastVerified": {
       "at": "2026-11-13T17:24:22+02:00",
@@ -242,44 +602,52 @@
         "layer": "AD DNS",
         "name": "BWANA-DC01",
         "address": "192.168.10.1",
-        "resolves": null,
+        "resolves": "142.251.216.5",
         "role": "authoritative ad.bwanakhasu.one",
-        "status": "FAIL"
+        "status": "PASS"
       },
       {
         "layer": "AD DNS",
         "name": "BWANA-DC02",
         "address": "192.168.11.1",
-        "resolves": null,
+        "resolves": "142.251.216.5",
         "role": "secondary DC",
-        "status": "FAIL"
+        "status": "PASS"
       },
       {
         "layer": "Pi-hole",
         "name": "CT112",
         "address": "192.168.10.53",
-        "resolves": null,
+        "resolves": "142.251.216.5",
         "role": "AD forwarder + ad blocking",
-        "status": "FAIL",
-        "adBlock": null,
-        "ui": null,
-        "adminApi": null
+        "status": "PASS",
+        "adBlock": "0.0.0.0",
+        "ui": "302",
+        "adminApi": "401"
       },
       {
         "layer": "Technitium",
         "name": "CT111",
         "address": "192.168.10.54",
-        "resolves": null,
+        "resolves": "142.251.47.5",
         "role": "Pi-hole upstream, forward-only",
-        "status": "FAIL",
-        "ui": null,
-        "statsApi": null
+        "status": "PASS",
+        "ui": "200",
+        "statsApi": "200"
       }
     ],
     "ad": {
-      "zones": [],
-      "zoneCount": null,
-      "forwarders": []
+      "zones": [
+        "_msdcs.ad.bwanakhasu.one",
+        "0.in-addr.arpa",
+        "127.in-addr.arpa",
+        "255.in-addr.arpa",
+        "ad.bwanakhasu.one"
+      ],
+      "zoneCount": 5,
+      "forwarders": [
+        "192.168.10.53"
+      ]
     },
     "public": [
       {
@@ -409,16 +777,20 @@
       {
         "domain": "bwanakhasu.one",
         "nameservers": [
-          "irena.ns.cloudflare.com.",
-          "ishaan.ns.cloudflare.com."
+          "angela.ns.cloudflare.com.",
+          "clark.ns.cloudflare.com."
         ],
         "managedAt": "Cloudflare",
-        "mx": [],
-        "spf": null,
-        "dmarc": null,
-        "mxOk": false,
-        "spfOk": false,
-        "dmarcOk": false
+        "mx": [
+          "route1.mx.cloudflare.net.",
+          "route2.mx.cloudflare.net.",
+          "route3.mx.cloudflare.net."
+        ],
+        "spf": "v=spf1 ip4:105.245.56.214 include:_spf.mx.cloudflare.net ~all",
+        "dmarc": "v=DMARC1; p=quarantine; rua=mailto:dmarc@bwanakhasu.one; adkim=s; aspf=s",
+        "mxOk": true,
+        "spfOk": true,
+        "dmarcOk": true
       },
       {
         "domain": "randomitesells.click",
@@ -495,11 +867,11 @@
     ],
     "publicSummary": {
       "total": 12,
-      "withMx": 11,
-      "withSpf": 11,
-      "withDmarc": 11
+      "withMx": 12,
+      "withSpf": 12,
+      "withDmarc": 12
     },
-    "generatedAt": "2026-11-13T19:40:01+02:00"
+    "generatedAt": "2026-11-14T01:30:01+02:00"
   },
   "mailcowAdmin": "https://mail.bwanakhasu.com:8443/",
   "webmail": "http://127.0.0.1:8082/",

@@ -486,14 +486,17 @@ html,body{height:100vh;overflow:hidden}
     { key: 'n8n', name: 'n8n', icon: '⚡', port: 8213, url: 'http://127.0.0.1:8213/', desc: 'Workflow automation (OpenShip-deployed). Owner account pending first-run.' },
     { key: 'open-webui', name: 'Open WebUI', icon: '✦', port: 8214, url: 'http://127.0.0.1:8214/', desc: 'Self-hosted AI chat for Ollama (OpenShip-deployed). Administrator credentials are stored in OpenBao.' },
     { key: 'wiki-js', name: 'Wiki.js', icon: '▤', port: 8215, url: 'http://127.0.0.1:8215/', desc: 'Knowledge base (OpenShip-deployed). Administrator credentials are stored in OpenBao.' },
-    { key: 'nextcloud-aio', name: 'Nextcloud AIO', icon: '▦', port: 8465, url: 'https://cloud.localhost/', desc: 'Nextcloud All-in-One — full stack (Euro-Office, Talk, ClamAV, Fulltextsearch, Whiteboard, HaRP). Local TLS; admin credentials in OpenBao.' },
+    { key: 'nextcloud-aio', name: 'Nextcloud AIO', icon: '▦', port: 8465, url: 'https://cloud.localhost:9443/', desc: 'Nextcloud All-in-One — full stack (Euro-Office, Talk, ClamAV, Fulltextsearch, Whiteboard, HaRP). Local TLS; admin credentials in OpenBao.' },
     { key: 'nextcloud-aio-ui', name: 'AIO Interface', icon: '⚿', port: 8466, url: 'https://127.0.0.1:8466/', desc: 'AIO control interface — direct login blocked while Nextcloud runs; use the indirect login link from Nextcloud admin → overview. Passphrase in OpenBao.' },
     { key: 'nextcloud', name: 'Nextcloud', icon: '▦', port: 8216, url: 'http://127.0.0.1:8216/', desc: 'Files, calendar and contacts (OpenShip-deployed). Administrator credentials are stored in OpenBao.' },
     { key: 'it-tools', name: 'IT-Tools', icon: '⌘', port: 8205, url: 'http://127.0.0.1:8205/', desc: 'Browser-based developer and sysadmin utilities (OpenShip-deployed). HTTP Basic auth; credentials in OpenBao.' },
     { key: 'stirling-pdf', name: 'Stirling PDF', icon: '▤', port: 8209, url: 'http://127.0.0.1:8209/', desc: 'PDF toolkit (OpenShip-deployed). Administrator credentials are stored in OpenBao.' },
     { key: 'freshrss', name: 'FreshRSS', icon: '✶', port: 8204, url: 'http://127.0.0.1:8204/', desc: 'RSS reader (OpenShip-deployed). Administrator credentials are stored in OpenBao.' },
     { key: 'excalidraw', name: 'Excalidraw', icon: '✎', port: 8203, url: 'http://127.0.0.1:8203/', desc: 'Collaborative whiteboard (OpenShip-deployed). HTTP Basic auth; credentials in OpenBao.' },
-    { key: 'pliny-7777', name: 'Pliny Hub', icon: 'P', port: 7777, url: 'http://127.0.0.1:7777/', unit: 'pliny-7777', desc: 'This control center — one page for every local Pliny app, live PortView and CLI tooling.' },
+    { key: 'code-server', name: 'code-server', icon: '⌘', port: 8207, url: 'http://127.0.0.1:8207/', desc: 'Browser VS Code (OpenShip-deployed). Administrator credentials are stored in OpenBao.' },
+    { key: 'gitea', name: 'Gitea', icon: '⌥', port: 3009, url: 'http://127.0.0.1:3009/', desc: 'Self-hosted Git service (OpenShip-deployed). Administrator credentials are stored in OpenBao.' },
+    { key: 'paperless', name: 'Paperless-ngx', icon: '▤', port: 8210, url: 'http://127.0.0.1:8210/', desc: 'Document management (OpenShip-deployed). Administrator credentials are stored in OpenBao.' },
+    { key: 'pliny-7777', name: 'Pliny Hub', icon: 'P', port: 7777, url: 'http://7777.localhost:8780/', unit: 'pliny-7777', desc: 'This control center — one page for every local Pliny app, live PortView and CLI tooling.' },
     { key: 'g0dm0d3', name: 'G0DM0D3', icon: 'G', port: 3000, url: 'http://127.0.0.1:3000/', unit: 'g0dm0d3', desc: 'Liberated AI chat with OpenRouter and Venice keys wired from the local vault.' },
     { key: 'gl4ss', name: 'GL4SS', icon: '◈', port: 5173, url: 'http://127.0.0.1:5173/', unit: 'gl4ss', desc: 'The Looking Glass — reflective prompt and persona surface running on Vite.' },
     { key: 'p4rs', name: 'P4RS3LT0NGV3', icon: 'Ψ', port: 8080, url: 'http://127.0.0.1:8080/', unit: 'p4rs', desc: 'Parseltongue text encoder, decoder and steganography toolkit.' },
@@ -527,9 +530,8 @@ html,body{height:100vh;overflow:hidden}
 
   // ---------- embedded viewer ----------
   function proxyify(url) {
-    var m = String(url || '').match(/^http:\/\/127\.0\.0\.1:(\d+)(\/\S*)?$/);
-    if (m) return 'http://' + m[1] + '.localhost:8780' + (m[2] || '/');
-    return url;
+    // Use direct 127.0.0.1:PORT — Same IP = same site, so SameSite=Lax cookies flow in the iframe.
+    return String(url || '');
   }
 
   function openInPage(url, title) {
@@ -558,7 +560,16 @@ html,body{height:100vh;overflow:hidden}
     var t = e.target.closest('[data-embed]');
     if (!t) return;
     e.preventDefault();
-    openInPage(t.getAttribute('data-embed'), t.getAttribute('data-title'));
+    var url = t.getAttribute('data-embed');
+    openInPage(url, t.getAttribute('data-title'));
+    // Fire-and-forget: ask the desktop launcher to autofill the iframe (embed=true).
+    try {
+      fetch('http://127.0.0.1:3366/_gateway/api/launch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Bwana-Launch': '1' },
+        body: JSON.stringify({ url: url, embed: true, name: t.getAttribute('data-title') || 'app' })
+      }).catch(function () {});
+    } catch (err) { /* best-effort */ }
   });
 
   function copy(text) {
