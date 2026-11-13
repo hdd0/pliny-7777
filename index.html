@@ -83,6 +83,25 @@ h2{font-size:14px;font-weight:600;margin:0;color:#2b2d38}
 .local-badge{font-size:8px;color:#8e9397;letter-spacing:1px;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
 .local-badge .dot{width:5px;height:5px}
 
+/* ---------- embedded app viewer (platform style) ---------- */
+.app-viewer{position:fixed;inset:0;z-index:70;padding:22px 26px;background:rgba(24,18,32,.58);display:flex;flex-direction:column}
+.app-viewer[hidden]{display:none}
+.app-viewer-inner{flex:1;display:flex;flex-direction:column;min-height:0;background:#fff;border:1px solid #e7e0f3;border-radius:12px;overflow:hidden;box-shadow:0 30px 90px rgba(18,8,38,.38)}
+.app-viewer-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-bottom:1px solid #efeaf6;background:#fdfcfe}
+.app-viewer-bar strong{font-size:11px;color:#4b4356;font-weight:600}
+.app-viewer-bar small{font-size:9px;color:#a89bb5;font-family:ui-monospace,monospace;margin-left:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.app-viewer-actions{display:flex;gap:6px;flex-shrink:0}
+.vbtn{border:1px solid #e8e4f2;background:#fff;color:#8054c7;font-size:9px;padding:7px 10px;border-radius:5px;font-weight:600;cursor:pointer}
+.vbtn:hover{background:#f7f2ff}
+.vbtn.primary{background:#6936dc;border-color:#6936dc;color:#fff}
+.vbtn.primary:hover{background:#5726c1}
+.app-viewer-frame{flex:1;width:100%;border:0;background:#fff}
+button.tile{text-align:left;font:inherit;cursor:pointer;width:100%}
+
+.row-open{background:none;border:0;color:#8054c7;cursor:pointer;font:inherit;font-size:9px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;padding:0}
+.row-open:hover{color:#5726c1}
+.link-embed{background:none;border:0;color:#8054c7;cursor:pointer;font:inherit;padding:0}
+
 /* ---------- app cards ---------- */
 .app-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px;padding:0 22px 22px}
 .app-card{border:1px solid #ebe5f1;border-radius:10px;padding:19px 19px 16px;display:flex;flex-direction:column;background:#fff;transition:border-color .15s,box-shadow .15s}
@@ -225,6 +244,11 @@ tbody tr:hover{background:#fcfaff}
   .toast{left:74px;right:14px;bottom:14px}
   .chat-frame{height:62vh}
 }
+
+/* one-viewport layout */
+html,body{height:100vh;overflow:hidden}
+.shell{height:100vh;display:flex;flex-direction:column}
+.shell>main{flex:1;min-height:0;overflow:auto}
 </style>
 </head>
 <body>
@@ -333,7 +357,7 @@ tbody tr:hover{background:#fcfaff}
       <div class="panel">
         <div class="panel-heading"><div><h2>Mail servers <span class="count" id="mail-count">—</span></h2><p>Source of truth: the 3366 OpenShip/Mailcow monitor. Read-only. Updated by the local reporter.</p></div><span class="local-badge"><i class="dot green"></i> LOCAL</span></div>
         <div class="table-scroll"><table><thead><tr><th>Component</th><th>Status</th><th>Detail</th></tr></thead><tbody id="mail-rows"><tr><td colspan="3" class="empty">Loading mail status…</td></tr></tbody></table></div>
-        <footer class="table-footer"><span id="mail-verdict">Loading…</span><span>3366 /email · <a href="http://127.0.0.1:8082/" target="_blank" rel="noopener">Roundcube</a> · <a href="https://mail.bwanakhasu.com:8443/" target="_blank" rel="noopener">Mailcow admin</a> <i class="dot"></i></span></footer>
+        <footer class="table-footer"><span id="mail-verdict">Loading…</span><span>3366 /email · <a href="#" data-embed="http://127.0.0.1:8082/" data-title="Roundcube">Roundcube</a> · <a href="https://mail.bwanakhasu.com:8443/" target="_blank" rel="noopener">Mailcow admin</a> <i class="dot"></i></span></footer>
         <div id="mail-boxes" style="padding:2px 21px 15px;display:flex;flex-wrap:wrap;gap:6px"></div>
       </div>
       <div class="panel">
@@ -422,6 +446,19 @@ tbody tr:hover{background:#fcfaff}
 
 <div id="toast" class="toast" hidden></div>
 
+<div id="app-viewer" class="app-viewer" hidden role="dialog" aria-label="Embedded application">
+  <div class="app-viewer-inner">
+    <div class="app-viewer-bar">
+      <div style="min-width:0"><strong id="app-viewer-title">—</strong><small id="app-viewer-url">—</small></div>
+      <div class="app-viewer-actions">
+        <button class="vbtn" id="app-viewer-reload" title="Reload app">↻ Reload</button>
+        <button class="vbtn primary" id="app-viewer-close" title="Close viewer (Esc)">✕ Close</button>
+      </div>
+    </div>
+    <iframe id="app-viewer-frame" class="app-viewer-frame" title="Embedded application" referrerpolicy="same-origin"></iframe>
+  </div>
+</div>
+
 <script>
 (function () {
   'use strict';
@@ -449,11 +486,13 @@ tbody tr:hover{background:#fcfaff}
     { key: 'n8n', name: 'n8n', icon: '⚡', port: 8213, url: 'http://127.0.0.1:8213/', desc: 'Workflow automation (OpenShip-deployed). Owner account pending first-run.' },
     { key: 'open-webui', name: 'Open WebUI', icon: '✦', port: 8214, url: 'http://127.0.0.1:8214/', desc: 'Self-hosted AI chat for Ollama (OpenShip-deployed). Administrator credentials are stored in OpenBao.' },
     { key: 'wiki-js', name: 'Wiki.js', icon: '▤', port: 8215, url: 'http://127.0.0.1:8215/', desc: 'Knowledge base (OpenShip-deployed). Administrator credentials are stored in OpenBao.' },
+    { key: 'nextcloud-aio', name: 'Nextcloud AIO', icon: '▦', port: 8465, url: 'https://cloud.localhost/', desc: 'Nextcloud All-in-One — full stack (Euro-Office, Talk, ClamAV, Fulltextsearch, Whiteboard, HaRP). Local TLS; admin credentials in OpenBao.' },
+    { key: 'nextcloud-aio-ui', name: 'AIO Interface', icon: '⚿', port: 8466, url: 'https://127.0.0.1:8466/', desc: 'AIO control interface — direct login blocked while Nextcloud runs; use the indirect login link from Nextcloud admin → overview. Passphrase in OpenBao.' },
     { key: 'nextcloud', name: 'Nextcloud', icon: '▦', port: 8216, url: 'http://127.0.0.1:8216/', desc: 'Files, calendar and contacts (OpenShip-deployed). Administrator credentials are stored in OpenBao.' },
-    { key: 'it-tools', name: 'IT-Tools', icon: '⌘', port: 8205, url: 'http://127.0.0.1:8205/', desc: 'Browser-based developer and sysadmin utilities. No login.' },
+    { key: 'it-tools', name: 'IT-Tools', icon: '⌘', port: 8205, url: 'http://127.0.0.1:8205/', desc: 'Browser-based developer and sysadmin utilities (OpenShip-deployed). HTTP Basic auth; credentials in OpenBao.' },
     { key: 'stirling-pdf', name: 'Stirling PDF', icon: '▤', port: 8209, url: 'http://127.0.0.1:8209/', desc: 'PDF toolkit (OpenShip-deployed). Administrator credentials are stored in OpenBao.' },
     { key: 'freshrss', name: 'FreshRSS', icon: '✶', port: 8204, url: 'http://127.0.0.1:8204/', desc: 'RSS reader (OpenShip-deployed). Administrator credentials are stored in OpenBao.' },
-    { key: 'excalidraw', name: 'Excalidraw', icon: '✎', port: 8203, url: 'http://127.0.0.1:8203/', desc: 'Collaborative whiteboard. No login.' },
+    { key: 'excalidraw', name: 'Excalidraw', icon: '✎', port: 8203, url: 'http://127.0.0.1:8203/', desc: 'Collaborative whiteboard (OpenShip-deployed). HTTP Basic auth; credentials in OpenBao.' },
     { key: 'pliny-7777', name: 'Pliny Hub', icon: 'P', port: 7777, url: 'http://127.0.0.1:7777/', unit: 'pliny-7777', desc: 'This control center — one page for every local Pliny app, live PortView and CLI tooling.' },
     { key: 'g0dm0d3', name: 'G0DM0D3', icon: 'G', port: 3000, url: 'http://127.0.0.1:3000/', unit: 'g0dm0d3', desc: 'Liberated AI chat with OpenRouter and Venice keys wired from the local vault.' },
     { key: 'gl4ss', name: 'GL4SS', icon: '◈', port: 5173, url: 'http://127.0.0.1:5173/', unit: 'gl4ss', desc: 'The Looking Glass — reflective prompt and persona surface running on Vite.' },
@@ -485,6 +524,42 @@ tbody tr:hover{background:#fcfaff}
     clearTimeout(t._timer);
     t._timer = setTimeout(function () { t.hidden = true; }, 2200);
   }
+
+  // ---------- embedded viewer ----------
+  function proxyify(url) {
+    var m = String(url || '').match(/^http:\/\/127\.0\.0\.1:(\d+)(\/\S*)?$/);
+    if (m) return 'http://' + m[1] + '.localhost:8780' + (m[2] || '/');
+    return url;
+  }
+
+  function openInPage(url, title) {
+    var f = el('app-viewer-frame');
+    el('app-viewer-title').textContent = title || 'App';
+    el('app-viewer-url').textContent = url;
+    f.src = proxyify(url);
+    el('app-viewer').hidden = false;
+  }
+
+  function closeViewer() {
+    var v = el('app-viewer');
+    v.hidden = true;
+    el('app-viewer-frame').src = 'about:blank';
+  }
+
+  el('app-viewer-close').addEventListener('click', closeViewer);
+  el('app-viewer-reload').addEventListener('click', function () {
+    var f = el('app-viewer-frame');
+    f.src = f.src;
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !el('app-viewer').hidden) closeViewer();
+  });
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-embed]');
+    if (!t) return;
+    e.preventDefault();
+    openInPage(t.getAttribute('data-embed'), t.getAttribute('data-title'));
+  });
 
   function copy(text) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -550,10 +625,10 @@ tbody tr:hover{background:#fcfaff}
     var host = el('quick-grid');
     host.innerHTML = APPS.map(function (a) {
       var s = appStatus(a.port);
-      return '<a class="tile" href="' + esc(a.url) + '" target="_blank" rel="noopener" title="' + esc(a.desc) + '">' +
+      return '<button class="tile" data-embed="' + esc(a.url) + '" data-title="' + esc(a.name) + '" title="' + esc(a.desc) + '">' +
         '<span class="tile-top"><span class="tile-icon">' + esc(a.icon) + '</span><strong>' + esc(a.name) + '</strong></span>' +
         '<small>127.0.0.1:' + a.port + ' · ' + esc(s.label) + '</small>' +
-      '</a>';
+      '</button>';
     }).join('');
     el('quick-count').textContent = APPS.length;
   }
@@ -569,7 +644,7 @@ tbody tr:hover{background:#fcfaff}
         '<div class="app-card-bottom">' + pill(s) +
           '<span class="app-actions">' +
             '<button class="mini" data-copy="' + esc(cmd) + '" title="Copy restart command">⧉ CLI</button>' +
-            '<a class="mini primary" href="' + esc(a.url) + '" target="_blank" rel="noopener">Open ↗</a>' +
+            '<button class="mini primary" data-embed="' + esc(a.url) + '" data-title="' + esc(a.name) + '">Open ⤢</button>' +
           '</span>' +
         '</div>' +
       '</article>';
@@ -606,7 +681,7 @@ tbody tr:hover{background:#fcfaff}
       body.innerHTML = rows.map(function (s) {
         var st = svcStatus(s);
         var ep = serviceEndpoint(s);
-        var open = (st.cls === 'good' && ep) ? '<a class="row-open" href="' + esc(ep) + '" target="_blank" rel="noopener">Open ↗</a>' : '<span class="row-open" style="opacity:.35;cursor:default">—</span>';
+        var open = ep ? '<button class="row-open" data-embed="' + esc(ep) + '" data-title="' + esc(s.name) + '">Open ⤢</button>' : '<span class="row-open" style="opacity:.35;cursor:default">—</span>';
         return '<tr>' +
           '<td><span class="svc-name"><span class="svc-symbol">' + esc(SYMBOLS[s.g] || '•') + '</span><span>' + esc(s.name) +
             (s.note ? '<small>' + esc(s.note) + '</small>' : '') + '</span></span></td>' +

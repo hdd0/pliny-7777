@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bwana Live Services | 7777</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif}
+body{background:#111724;color:#e5ebf4;margin:0}main{max-width:1150px;margin:2rem auto;padding:0 1.25rem}
+a{color:#8bd0ff}header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem}
+h1{margin-bottom:.35rem}p{color:#aebdce}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:1rem;margin:1.5rem 0}
+.tile,section{padding:1.15rem;background:#1b2534;border:1px solid #3d4d64;border-radius:.8rem}
+.big{font-size:2rem;font-weight:750}.hint{font-size:.85rem;color:#b5c3d6}
+table{width:100%;border-collapse:collapse}th,td{padding:.7rem;border-bottom:1px solid #354459;text-align:left}
+section{margin-bottom:1.5rem;overflow:auto}input{border:1px solid #50617a;border-radius:.4rem;padding:.7rem;background:#17202d;color:white;width:min(100%,390px)}
+.bad{color:#ffb4a9}.good{color:#8ee2b7}
+/* one-viewport layout */
+html,body{height:100vh;overflow:hidden}
+main{height:100%;overflow:auto}
+</style>
+</head>
+<body><main>
+<header><div><a href="/">← Pliny 7777</a><h1>Live Service & Repository Registry</h1>
+<p>Discovered from running sockets, HTTP responses and local Git worktrees. One shared feed for 7777, 3366 and 3370.</p></div>
+<div id="fresh" aria-live="polite">Checking live inventory…</div></header>
+<div class="tiles">
+<div class="tile"><div class="hint">Listening ports</div><div class="big" id="ports">—</div></div>
+<div class="tile"><div class="hint">HTTP services reached</div><div class="big" id="services">—</div></div>
+<div class="tile"><div class="hint">Local Git repositories</div><div class="big" id="repos">—</div></div>
+</div>
+<section><h2>Live HTTP services</h2><input id="filter" type="search" placeholder="Filter services or port" aria-label="Filter services">
+<table><thead><tr><th>Application</th><th>Port</th><th>HTTP status</th><th>URL</th></tr></thead><tbody id="service-table"></tbody></table></section>
+<section><h2>Git repository inventory</h2><p class="hint">Repository presence and dirty tracked state are discovered locally. This does not certify build or deployment success.</p>
+<table><thead><tr><th>Repository</th><th>Branch</th><th>Tracked changes</th><th>GitHub</th></tr></thead><tbody id="repo-table"></tbody></table></section>
+<section><h2>Related monitoring</h2>
+<p><a href="http://127.0.0.1:3366/monitor">BwanaAI monitor 3366</a> ·
+<a href="http://127.0.0.1:3370/">Bwana Sync 3370</a> ·
+<a href="/terminal-sessions.html">Terminal sessions</a> ·
+<a href="http://127.0.0.1:3370/junglewolf">Junglewolf</a></p>
+<p class="hint">HTTP 200–499 confirms a responding service, including sign-in or permission errors. It does not prove application transactions are healthy. For security, only designated HTTP ports are probed; the complete socket list remains in a private local audit.</p></section>
+</main>
+<script>
+'use strict';
+const el=id=>document.getElementById(id);
+let cached=null;
+function td(value){const x=document.createElement('td');x.textContent=String(value??'');return x}
+function draw(){
+if(!cached)return;
+const q=el('filter').value.trim().toLowerCase();
+const body=el('service-table');body.replaceChildren();
+for(const service of cached.services.filter(x=>String(x.name+' '+x.port).toLowerCase().includes(q))){
+const tr=document.createElement('tr');
+tr.append(td(service.name),td(service.port),td(service.status_code));
+const cell=document.createElement('td'),a=document.createElement('a');
+a.href=service.url;a.textContent=service.url;a.rel='noopener';cell.append(a);tr.append(cell);body.append(tr);
+}
+const repos=el('repo-table');repos.replaceChildren();
+for(const repo of cached.repositories){
+const tr=document.createElement('tr');tr.append(td(repo.name),td(repo.branch),td(repo.dirty_tracked?'Modified':'Clean'));
+const cell=document.createElement('td');
+if(repo.github){const a=document.createElement('a');a.href='https://github.com/'+repo.github;a.textContent=repo.github;a.rel='noopener noreferrer';cell.append(a)}
+tr.append(cell);repos.append(tr);
+}
+}
+async function refresh(){
+try{
+const response=await fetch('/live-services.json?time='+Date.now(),{cache:'no-store'});
+if(!response.ok)throw Error('HTTP '+response.status);
+const data=await response.json();
+if(!Array.isArray(data.services)||!Array.isArray(data.repositories))throw Error('Invalid registry data');
+cached=data;el('ports').textContent=data.all_listening_port_count;
+el('services').textContent=data.public_http_count;el('repos').textContent=data.repository_count;
+const age=(Date.now()-Date.parse(data.observed_utc))/1000;
+el('fresh').textContent=(age<180?'● Live':'⚠ Stale')+' · '+new Date(data.observed_utc).toLocaleTimeString();
+el('fresh').className=age<180?'good':'bad';
+draw();
+}catch(e){el('fresh').textContent='⚠ Registry unavailable: '+e.message;el('fresh').className='bad'}
+}
+el('filter').addEventListener('input',draw);
+refresh();setInterval(refresh,45000);
+</script></body></html>

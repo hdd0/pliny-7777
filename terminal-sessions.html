@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bwana | Unified Terminal Sessions</title>
+<style>
+:root{color-scheme:dark}body{margin:0;font:15px system-ui,sans-serif;background:#10141e;color:#ecf1f7}
+main{max-width:1100px;margin:32px auto;padding:0 20px}a{color:#86c9ff}h1{margin-bottom:4px}
+.sub{color:#aebccb}header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin:24px 0}
+.card,section{background:#1c2431;border:1px solid #384658;border-radius:12px;padding:18px}
+.number{font-size:30px;font-weight:700}h2{font-size:19px;margin-top:0}table{width:100%;border-collapse:collapse}
+th,td{padding:11px;border-bottom:1px solid #384658;text-align:left}th{color:#aebccb}
+section{margin-bottom:18px;overflow-x:auto}.good{color:#78e5a4}.warn{color:#ffce79}
+.meta{color:#aebccb;font-size:13px}
+/* one-viewport layout */
+html,body{height:100vh;overflow:hidden}
+main{height:100%;overflow:auto}
+</style>
+</head>
+<body><main>
+<header><div><a href="/">← Pliny Control Centre</a><h1>Unified Terminal Sessions</h1>
+<div class="sub">Herdr managed workspaces + observed external AI processes · refreshed every 30 seconds</div></div>
+<div id="state" class="meta">Loading…</div></header>
+<div class="cards">
+<div class="card"><div class="sub">Herdr workspaces</div><div class="number" id="workspaces">—</div></div>
+<div class="card"><div class="sub">Managed panes</div><div class="number" id="panes">—</div></div>
+<div class="card"><div class="sub">External AI/terminal processes</div><div class="number" id="external">—</div></div>
+</div>
+<section><h2>Herdr-managed workspaces</h2><table><thead><tr><th>Workspace</th><th>Panes</th><th>Agent state</th></tr></thead>
+<tbody id="managed"><tr><td colspan="3">Loading…</td></tr></tbody></table></section>
+<section><h2>Other detected processes</h2>
+<p class="sub">These are process observations, not connected or controllable Herdr sessions. A process is not necessarily a terminal.</p>
+<table><thead><tr><th>Type</th><th>Processes</th></tr></thead><tbody id="observed"></tbody></table></section>
+<section><h2>Operational links</h2>
+<p><a href="http://127.0.0.1:3370/junglewolf">Junglewolf coordination</a> ·
+<a href="http://127.0.0.1:3370/">Bwana audit</a> ·
+<a href="http://127.0.0.1:3001/">OpenShip</a> ·
+<a href="http://127.0.0.1:3366/">Bwana gateway</a></p>
+<p class="sub">Live service journal on PC: <code>/step/scripts/bwana-livelogs.sh</code><br>
+Session inventory log: <code>journalctl --user -fu bwana-herdr-session-sync.service</code></p></section>
+</main>
+<script>
+const elem=id=>document.getElementById(id);
+function cell(text){const td=document.createElement('td');td.textContent=String(text);return td}
+function fill(id,rows){const body=elem(id);body.replaceChildren();for(const row of rows){const tr=document.createElement('tr');for(const v of row)tr.appendChild(cell(v));body.appendChild(tr)}}
+async function refresh(){
+try{
+const res=await fetch('/terminal-sessions.json?x='+Date.now(),{cache:'no-store'});
+if(!res.ok)throw Error('HTTP '+res.status);
+const data=await res.json();
+elem('workspaces').textContent=data.managed_workspace_count;
+elem('panes').textContent=data.managed_pane_count;
+elem('external').textContent=data.external_process_count;
+fill('managed',(data.workspaces||[]).map(x=>[x.label,x.pane_count,x.agent_status||'unknown']));
+fill('observed',Object.entries(data.process_kinds||{}).map(([name,n])=>[name,n]));
+const age=(Date.now()-Date.parse(data.observed_utc))/1000;
+elem('state').textContent=(age<100?'● Inventory current':'⚠ Inventory stale')+' · '+new Date(data.observed_utc).toLocaleTimeString();
+elem('state').className='meta '+(age<100?'good':'warn');
+}catch(err){elem('state').textContent='⚠ Inventory unavailable: '+err.message;elem('state').className='meta warn'}
+}
+refresh();setInterval(refresh,30000);
+</script>
+</body></html>
